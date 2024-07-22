@@ -1,0 +1,22 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "[![Actions Status](https://github.com/Nordask/frontend-testing-react-project-70/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Nordask/frontend-testing-react-project-70/actions)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nordask/frontend-testing-react-project-70.git"
+  },
+  "author": "Nordask",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nordask/frontend-testing-react-project-70/issues"
+  },
+  "homepage": "https://github.com/Nordask/frontend-testing-react-project-70#readme",
+  "dependencies": {
+    "@hexlet/react-todo-app-with-backend": "^0.10.0"
+  }
+}
