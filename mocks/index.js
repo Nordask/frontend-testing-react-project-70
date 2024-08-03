@@ -23,7 +23,23 @@ const runServer = (initialState) => {
     rest.delete(createPath('tasks', ':id'), (req, res, ctx) => {
       tasks = tasks.filter((task) => task.id !== req.params.id);
       ctx.delay();
-      return res(ctx.status(204));
+      return res(ctx.status(200));
+    }),
+    rest.post(createPath('lists'), (req, res, ctx) => {
+      const mockedList = {
+        id: new Date().getTime(),
+        name: req.body.name,
+        removable: true,
+      };
+      lists.push(mockedList);
+      ctx.delay();
+      return res(ctx.json(mockedList));
+    }),
+    rest.delete(createPath('lists', ':id'), (req, res, ctx) => {
+      lists = lists.filter((list) => list.id !== req.params.id);
+      tasks = tasks.filter((task) => task.listId !== req.params.id);
+      ctx.delay();
+      return res(ctx.status(200));
     }),
   ];
 

@@ -2,7 +2,7 @@ import toDoApp from '@hexlet/react-todo-app-with-backend';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import {
-  render, screen, within, waitFor,
+  render, waitFor,
 } from '@testing-library/react';
 import { cloneDeep } from 'lodash';
 import runServer from '../mocks';
@@ -10,6 +10,8 @@ import runServer from '../mocks';
 
 const TASK_1 = 'Task 1';
 const TASK_2 = 'Task 2';
+const LIST_1 = 'First type tasks';
+const LIST_2 = 'Second type tasks';
 
 const DUMMY_DATA = {
   currentListId: 1,
@@ -43,7 +45,20 @@ const getDummyData = () => (cloneDeep(DUMMY_DATA));
 
 let server;
 
-describe('Core', () => {
+describe('toDoApp tests', () => {
+  beforeEach(() => {
+    server = runServer(getDummyData());
+    server.listen();
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
+  });
+
   it('should display to-do list', async () => {
     const virtualDom = toDoApp(getDummyData());
     const { queryAllByText, queryAllByRole } = render(virtualDom);
@@ -62,19 +77,6 @@ describe('Core', () => {
   });
 
   describe('Tasks', () => {
-    beforeEach(() => {
-      server = runServer(getDummyData());
-      server.listen();
-    });
-  
-    afterEach(() => {
-      server.resetHandlers();
-    });
-  
-    afterAll(() => {
-      server.close();
-    });
-
     it('it should add new tasks', async () => {
       const virtualDom = toDoApp(getDummyData());
       const { getByTestId, getByText, debug } = render(virtualDom);
@@ -163,6 +165,92 @@ describe('Core', () => {
 
       await waitFor(() => {
         expect(getByText('Tasks list is empty')).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Lists', () => {
+    it('should add new lists', async () => {
+      const virtualDom = toDoApp(getDummyData());
+      const { getByTestId, getByText } = render(virtualDom);
+
+      const firstListName = 'First List';
+      const secondListName = 'Second List';
+
+      const listForm = getByTestId('list-form');
+      const input = within(listForm).getByRole('textbox', { name: 'New list' });
+      const submit = within(listForm).getByRole('button', { name: 'add list' });
+
+      expect(getByText(LIST_1).getAttribute("class")?.split(' ')?.includes('link-primary'));
+
+      userEvent.type(input, 'lineage');
+      userEvent.click(screen.getByText('Hexlet Todos'));
+
+      await waitFor(() => {
+        expect(input.getAttribute("class")?.split(' ')?.includes('is-valid')).toBeTruthy();
+      });
+
+      userEvent.clear(input);
+      userEvent.click(submit);
+
+      await waitFor(() => {
+        expect(input.getAttribute("class")?.split(' ')?.includes('is-invalid')).toBeTruthy();
+        expect(getByText('Required!')).toBeTruthy();
+      });
+
+      userEvent.type(input, firstListName);
+      userEvent.click(submit);
+
+      expect(input.getAttribute('readonly')).toBe("");
+      expect(submit.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        const ul = getByTestId('lists');
+        expect(within(ul).getAllByText(firstListName)).toHaveLength(1);
+        expect(getByText('Tasks list is empty')).toBeTruthy();
+        expect(getByText(firstListName).getAttribute("class")?.split(' ')?.includes('link-primary')).toBeTruthy();
+        expect(getByText(LIST_1).getAttribute("class")?.split(' ')?.includes('link-secondary')).toBeTruthy();
+      });
+
+      userEvent.type(input, secondListName);
+      userEvent.click(submit);
+
+      expect(input.getAttribute('readonly')).toBe("");
+      expect(submit.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        const ul = getByTestId('lists');
+        expect(within(ul).getAllByText(secondListName)).toHaveLength(1);
+      });
+
+      userEvent.type(input, secondListName);
+      userEvent.click(submit);
+
+      await waitFor(() => {
+        const ul = getByTestId('lists');
+        expect(within(ul).getAllByText(secondListName)).toHaveLength(1);
+      });
+
+      expect(within(listForm).getByText(`${secondListName} already exists`)).toBeTruthy();
+    });
+
+    it('it should delete', async () => {
+      const virtualDom = toDoApp(getDummyData());
+      const { getByTestId, getByText } = render(virtualDom);
+
+      const ul = getByTestId('lists');
+      const removeButton = within(ul).getByRole('button', { name: 'remove list' });
+
+      expect(within(ul).getAllByRole('listitem')).toHaveLength(2);
+      expect(within(ul).getByText(LIST_1)).toBeTruthy();
+      expect(within(ul).getByText(LIST_2)).toBeTruthy();
+
+      userEvent.click(removeButton);
+      expect(removeButton.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        expect(within(ul).getAllByRole('listitem')).toHaveLength(1);
+        expect(within(ul).queryByText('secondary')).toBeNull();
       });
     });
   });
