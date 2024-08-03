@@ -1,8 +1,7 @@
 import toDoApp from '@hexlet/react-todo-app-with-backend';
 import userEvent from '@testing-library/user-event';
-import { rest } from 'msw';
 import {
-  render, waitFor,
+  render, waitFor, within
 } from '@testing-library/react';
 import { cloneDeep } from 'lodash';
 import runServer from '../mocks';
@@ -167,6 +166,42 @@ describe('toDoApp tests', () => {
         expect(getByText('Tasks list is empty')).toBeTruthy();
       });
     });
+
+    it('should complete tasks', async () => {
+      const virtualDom = toDoApp(getDummyData());
+      const { getByTestId, getByText, debug, getByLabelText } = render(virtualDom);
+
+      const ul = getByTestId('tasks');
+      const firstTask = getByLabelText(TASK_1);
+      const secondTask = getByLabelText(TASK_2);
+
+      userEvent.click(firstTask);
+      expect(firstTask.getAttribute('disabled')).toBe("");
+      
+      await waitFor(() => {
+        expect(firstTask.getAttribute('disabled')).toBeNull();
+        expect(ul.querySelectorAll('s')).toHaveLength(1);
+      });
+
+      userEvent.click(secondTask);
+      expect(secondTask.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        expect(secondTask.getAttribute('disabled')).toBeNull();
+        expect(ul.querySelectorAll('s')).toHaveLength(2);
+      });
+
+      userEvent.click(firstTask);
+      userEvent.click(secondTask);
+
+      expect(firstTask.getAttribute('disabled')).toBe("");
+      expect(secondTask.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        expect(secondTask.getAttribute('disabled')).toBeNull();
+        expect(ul.querySelectorAll('s')).toHaveLength(0);
+      });
+    });
   });
 
   describe('Lists', () => {
@@ -184,7 +219,7 @@ describe('toDoApp tests', () => {
       expect(getByText(LIST_1).getAttribute("class")?.split(' ')?.includes('link-primary'));
 
       userEvent.type(input, 'lineage');
-      userEvent.click(screen.getByText('Hexlet Todos'));
+      userEvent.click(getByText('Hexlet Todos'));
 
       await waitFor(() => {
         expect(input.getAttribute("class")?.split(' ')?.includes('is-valid')).toBeTruthy();

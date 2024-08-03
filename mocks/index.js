@@ -25,6 +25,14 @@ const runServer = (initialState) => {
       ctx.delay();
       return res(ctx.status(200));
     }),
+    rest.patch(createPath('tasks', ':id'), (req, res, ctx) => {
+      const currentTask = tasks.find((task) => task.id === Number(req.params.id));
+      const updatedTask = { ...currentTask, completed: req.body.completed };
+      tasks = tasks.filter((task) => task.id !== currentTask);
+      tasks.push(updatedTask);
+      ctx.delay();
+      return res(ctx.json(updatedTask));
+    }),
     rest.post(createPath('lists'), (req, res, ctx) => {
       const mockedList = {
         id: new Date().getTime(),
