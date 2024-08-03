@@ -20,6 +20,11 @@ const runServer = (initialState) => {
       ctx.delay();
       return res(ctx.json(mockedTask));
     }),
+    rest.delete(createPath('tasks', ':id'), (req, res, ctx) => {
+      tasks = tasks.filter((task) => task.id !== req.params.id);
+      ctx.delay();
+      return res(ctx.status(204));
+    }),
   ];
 
   return setupServer(...handlers);

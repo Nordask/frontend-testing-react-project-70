@@ -4,8 +4,12 @@ import { rest } from 'msw';
 import {
   render, screen, within, waitFor,
 } from '@testing-library/react';
+import { cloneDeep } from 'lodash';
 import runServer from '../mocks';
 
+
+const TASK_1 = 'Task 1';
+const TASK_2 = 'Task 2';
 
 const DUMMY_DATA = {
   currentListId: 1,
@@ -17,13 +21,13 @@ const DUMMY_DATA = {
     {
       id: 1,
       listId: 1,
-      text: 'Task 1',
+      text: TASK_1,
       completed: false,
     },
     {
       id: 2,
       listId: 1,
-      text: 'Task 2',
+      text: TASK_2,
       completed: false,
     },
     {
@@ -35,25 +39,13 @@ const DUMMY_DATA = {
   ],
 };
 
-let virtualDom;
+const getDummyData = () => (cloneDeep(DUMMY_DATA));
+
 let server;
 
 describe('Core', () => {
-  beforeEach(() => {
-    server = runServer(DUMMY_DATA);
-    server.listen();
-  });
-
-  afterEach(() => {
-    server.resetHandlers();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   it('should display to-do list', async () => {
-    const virtualDom = toDoApp(DUMMY_DATA);
+    const virtualDom = toDoApp(getDummyData());
     const { queryAllByText, queryAllByRole } = render(virtualDom);
 
     await waitFor(() => {
@@ -70,8 +62,21 @@ describe('Core', () => {
   });
 
   describe('Tasks', () => {
+    beforeEach(() => {
+      server = runServer(getDummyData());
+      server.listen();
+    });
+  
+    afterEach(() => {
+      server.resetHandlers();
+    });
+  
+    afterAll(() => {
+      server.close();
+    });
+
     it('it should add new tasks', async () => {
-      virtualDom = toDoApp(DUMMY_DATA);
+      const virtualDom = toDoApp(getDummyData());
       const { getByTestId, getByText, debug } = render(virtualDom);
 
       const firstTaskName = 'First';
@@ -130,6 +135,35 @@ describe('Core', () => {
       });
 
       expect(within(taskForm).getByText(`${secondTaskName} already exists`)).toBeTruthy();
+    });
+
+    it('should delete tast', async () => {
+      const virtualDom = toDoApp(getDummyData());
+      const { getByTestId, getByText, debug } = render(virtualDom);
+
+      const ul = getByTestId('tasks');
+      const removeButtons = within(ul).getAllByRole('button', { name: 'Remove' });
+      const [firstButton, secondButton] = removeButtons;
+
+      expect(within(ul).getAllByRole('listitem')).toHaveLength(2);
+      expect(removeButtons).toHaveLength(2);
+      expect(within(ul).getByText(TASK_1)).toBeTruthy();
+      expect(within(ul).getByText(TASK_2)).toBeTruthy();
+
+      userEvent.click(firstButton);
+      expect(firstButton.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        expect(within(ul).queryByText(TASK_1)).toBeNull();
+        expect(within(ul).getAllByRole('listitem')).toHaveLength(1);
+      });
+
+      userEvent.click(secondButton);
+      expect(secondButton.getAttribute('disabled')).toBe("");
+
+      await waitFor(() => {
+        expect(getByText('Tasks list is empty')).toBeTruthy();
+      });
     });
   });
 });
