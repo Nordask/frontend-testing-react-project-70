@@ -2,7 +2,7 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
 const URL = 'http://localhost/api/v1';
-export const createPath = (...paths) => [URL, ...paths].join('/');
+const createPath = (...paths) => [URL, ...paths].join('/');
 
 const runServer = (initialState) => {
   let { tasks, lists } = initialState;

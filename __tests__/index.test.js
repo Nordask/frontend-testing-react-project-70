@@ -1,9 +1,9 @@
 import toDoApp from '@hexlet/react-todo-app-with-backend';
 import userEvent from '@testing-library/user-event';
+import { cloneDeep } from 'lodash';
 import {
   render, waitFor, within
 } from '@testing-library/react';
-import { cloneDeep } from 'lodash';
 import runServer from '../mocks';
 
 
@@ -78,7 +78,7 @@ describe('toDoApp tests', () => {
   describe('Tasks', () => {
     it('it should add new tasks', async () => {
       const virtualDom = toDoApp(getDummyData());
-      const { getByTestId, getByText, debug } = render(virtualDom);
+      const { getByTestId, getByText } = render(virtualDom);
 
       const firstTaskName = 'First';
       const secondTaskName = 'Second';
@@ -140,7 +140,7 @@ describe('toDoApp tests', () => {
 
     it('should delete tast', async () => {
       const virtualDom = toDoApp(getDummyData());
-      const { getByTestId, getByText, debug } = render(virtualDom);
+      const { getByTestId, getByText } = render(virtualDom);
 
       const ul = getByTestId('tasks');
       const removeButtons = within(ul).getAllByRole('button', { name: 'Remove' });
@@ -169,7 +169,7 @@ describe('toDoApp tests', () => {
 
     it('should complete tasks', async () => {
       const virtualDom = toDoApp(getDummyData());
-      const { getByTestId, getByText, debug, getByLabelText } = render(virtualDom);
+      const { getByTestId, getByLabelText } = render(virtualDom);
 
       const ul = getByTestId('tasks');
       const firstTask = getByLabelText(TASK_1);
@@ -271,7 +271,7 @@ describe('toDoApp tests', () => {
 
     it('it should delete', async () => {
       const virtualDom = toDoApp(getDummyData());
-      const { getByTestId, getByText } = render(virtualDom);
+      const { getByTestId } = render(virtualDom);
 
       const ul = getByTestId('lists');
       const removeButton = within(ul).getByRole('button', { name: 'remove list' });
