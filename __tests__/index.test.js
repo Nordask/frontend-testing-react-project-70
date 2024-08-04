@@ -2,10 +2,9 @@ import toDoApp from '@hexlet/react-todo-app-with-backend';
 import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
 import {
-  render, waitFor, within
+  render, waitFor, within,
 } from '@testing-library/react';
 import runServer from '../mocks';
-
 
 const TASK_1 = 'Task 1';
 const TASK_2 = 'Task 2';
@@ -91,22 +90,22 @@ describe('toDoApp tests', () => {
       userEvent.click(getByText('Hexlet Todos'));
 
       await waitFor(() => {
-        expect(input.getAttribute("class")?.split(' ')?.includes('is-valid')).toBeTruthy();
+        expect(input.getAttribute('class')?.split(' ')?.includes('is-valid')).toBeTruthy();
       });
 
       userEvent.clear(input);
       userEvent.click(submit);
 
       await waitFor(() => {
-        expect(input.getAttribute("class")?.split(' ')?.includes('is-invalid')).toBeTruthy();
+        expect(input.getAttribute('class')?.split(' ')?.includes('is-invalid')).toBeTruthy();
         expect(getByText('Required!')).toBeTruthy();
       });
 
       userEvent.type(input, firstTaskName);
       userEvent.click(submit);
 
-      expect(input.getAttribute('readonly')).toBe("");
-      expect(submit.getAttribute('disabled')).toBe("");
+      expect(input.getAttribute('readonly')).toBe('');
+      expect(submit.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         const ul = getByTestId('tasks');
@@ -119,8 +118,8 @@ describe('toDoApp tests', () => {
       userEvent.type(input, secondTaskName);
       userEvent.click(submit);
 
-      expect(input.getAttribute('readonly')).toBe("");
-      expect(submit.getAttribute('disabled')).toBe("");
+      expect(input.getAttribute('readonly')).toBe('');
+      expect(submit.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         const ul = getByTestId('tasks');
@@ -152,7 +151,7 @@ describe('toDoApp tests', () => {
       expect(within(ul).getByText(TASK_2)).toBeTruthy();
 
       userEvent.click(firstButton);
-      expect(firstButton.getAttribute('disabled')).toBe("");
+      expect(firstButton.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         expect(within(ul).queryByText(TASK_1)).toBeNull();
@@ -160,7 +159,7 @@ describe('toDoApp tests', () => {
       });
 
       userEvent.click(secondButton);
-      expect(secondButton.getAttribute('disabled')).toBe("");
+      expect(secondButton.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         expect(getByText('Tasks list is empty')).toBeTruthy();
@@ -176,15 +175,15 @@ describe('toDoApp tests', () => {
       const secondTask = getByLabelText(TASK_2);
 
       userEvent.click(firstTask);
-      expect(firstTask.getAttribute('disabled')).toBe("");
-      
+      expect(firstTask.getAttribute('disabled')).toBe('');
+
       await waitFor(() => {
         expect(firstTask.getAttribute('disabled')).toBeNull();
         expect(ul.querySelectorAll('s')).toHaveLength(1);
       });
 
       userEvent.click(secondTask);
-      expect(secondTask.getAttribute('disabled')).toBe("");
+      expect(secondTask.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         expect(secondTask.getAttribute('disabled')).toBeNull();
@@ -194,8 +193,8 @@ describe('toDoApp tests', () => {
       userEvent.click(firstTask);
       userEvent.click(secondTask);
 
-      expect(firstTask.getAttribute('disabled')).toBe("");
-      expect(secondTask.getAttribute('disabled')).toBe("");
+      expect(firstTask.getAttribute('disabled')).toBe('');
+      expect(secondTask.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         expect(secondTask.getAttribute('disabled')).toBeNull();
@@ -216,42 +215,42 @@ describe('toDoApp tests', () => {
       const input = within(listForm).getByRole('textbox', { name: 'New list' });
       const submit = within(listForm).getByRole('button', { name: 'add list' });
 
-      expect(getByText(LIST_1).getAttribute("class")?.split(' ')?.includes('link-primary'));
+      expect(getByText(LIST_1).getAttribute('class')?.split(' ')?.includes('link-primary'));
 
       userEvent.type(input, 'lineage');
       userEvent.click(getByText('Hexlet Todos'));
 
       await waitFor(() => {
-        expect(input.getAttribute("class")?.split(' ')?.includes('is-valid')).toBeTruthy();
+        expect(input.getAttribute('class')?.split(' ')?.includes('is-valid')).toBeTruthy();
       });
 
       userEvent.clear(input);
       userEvent.click(submit);
 
       await waitFor(() => {
-        expect(input.getAttribute("class")?.split(' ')?.includes('is-invalid')).toBeTruthy();
+        expect(input.getAttribute('class')?.split(' ')?.includes('is-invalid')).toBeTruthy();
         expect(getByText('Required!')).toBeTruthy();
       });
 
       userEvent.type(input, firstListName);
       userEvent.click(submit);
 
-      expect(input.getAttribute('readonly')).toBe("");
-      expect(submit.getAttribute('disabled')).toBe("");
+      expect(input.getAttribute('readonly')).toBe('');
+      expect(submit.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         const ul = getByTestId('lists');
         expect(within(ul).getAllByText(firstListName)).toHaveLength(1);
         expect(getByText('Tasks list is empty')).toBeTruthy();
-        expect(getByText(firstListName).getAttribute("class")?.split(' ')?.includes('link-primary')).toBeTruthy();
-        expect(getByText(LIST_1).getAttribute("class")?.split(' ')?.includes('link-secondary')).toBeTruthy();
+        expect(getByText(firstListName).getAttribute('class')?.split(' ')?.includes('link-primary')).toBeTruthy();
+        expect(getByText(LIST_1).getAttribute('class')?.split(' ')?.includes('link-secondary')).toBeTruthy();
       });
 
       userEvent.type(input, secondListName);
       userEvent.click(submit);
 
-      expect(input.getAttribute('readonly')).toBe("");
-      expect(submit.getAttribute('disabled')).toBe("");
+      expect(input.getAttribute('readonly')).toBe('');
+      expect(submit.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         const ul = getByTestId('lists');
@@ -281,7 +280,7 @@ describe('toDoApp tests', () => {
       expect(within(ul).getByText(LIST_2)).toBeTruthy();
 
       userEvent.click(removeButton);
-      expect(removeButton.getAttribute('disabled')).toBe("");
+      expect(removeButton.getAttribute('disabled')).toBe('');
 
       await waitFor(() => {
         expect(within(ul).getAllByRole('listitem')).toHaveLength(1);
