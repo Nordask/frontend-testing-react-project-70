@@ -75,7 +75,7 @@ describe('toDoApp tests', () => {
   });
 
   describe('Tasks', () => {
-    it('it should add new tasks', async () => {
+    it('should add new tasks', async () => {
       const virtualDom = toDoApp(getDummyData());
       const { getByTestId, getByText } = render(virtualDom);
 
@@ -215,7 +215,7 @@ describe('toDoApp tests', () => {
       const input = within(listForm).getByRole('textbox', { name: 'New list' });
       const submit = within(listForm).getByRole('button', { name: 'add list' });
 
-      expect(getByText(LIST_1).getAttribute('class')?.split(' ')?.includes('link-primary'));
+      expect(getByText(LIST_1).getAttribute('class')?.split(' ')?.includes('link-primary')).toBeTruthy();
 
       userEvent.type(input, 'lineage');
       userEvent.click(getByText('Hexlet Todos'));
@@ -268,7 +268,7 @@ describe('toDoApp tests', () => {
       expect(within(listForm).getByText(`${secondListName} already exists`)).toBeTruthy();
     });
 
-    it('it should delete', async () => {
+    it('should delete', async () => {
       const virtualDom = toDoApp(getDummyData());
       const { getByTestId } = render(virtualDom);
 
